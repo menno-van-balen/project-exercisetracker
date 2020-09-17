@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const user = require("../../models/Usermodel");
 
 // 1. I can create a user by posting form data username to /api/exercise/new-user and returned will be an object with username and _id.
 router.post("/new-user", (req, res) => {
