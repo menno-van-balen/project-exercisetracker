@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-
 const cors = require("cors");
-
+const postsRoute = require("./scripts/routes/posts");
+const { DB_URI } = require("./scripts/config");
 const mongoose = require("mongoose");
-mongoose.connect(process.env.DB_URI || "mongodb://localhost/exercise-track", {
+
+mongoose.connect(DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
@@ -20,6 +21,8 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
+
+app.use("/api/exercise", postsRoute);
 
 // Not found middleware
 app.use((req, res, next) => {
