@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // 1. I can create a user by posting form data username to /api/exercise/new-user and returned will be an object with username and _id.
-router.get("/new-user", (req, res) => {
+router.post("/new-user", (req, res) => {
   res.json({
     res: "hello from new-user",
   });
@@ -14,7 +14,7 @@ router.get("/users", (req, res) => {
   });
 });
 // 3. I can add an exercise to any user by posting form data userId(_id), description, duration, and optionally date to /api/exercise/add. If no date supplied it will use current date. Returned will be the user object with also with the exercise fields added.
-router.get("/add", (req, res) => {
+router.post("/add", (req, res) => {
   res.json({
     res: "hello from add",
   });
