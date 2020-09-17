@@ -9,7 +9,7 @@ router.post("/new-user", (req, res) => {
     .exec()
     .then((doc) => {
       if (doc) {
-        console.log("New user request: Username already taken");
+        console.log("New user request error: Username already taken");
         res.send("Username already taken");
       } else {
         const user = new User({
