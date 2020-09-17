@@ -28,18 +28,38 @@ router.post("/new-user", (req, res) => {
       }
     })
     .catch((err) => {
-      console.error;
+      console.log("New user request error: ", err);
       res.json({
         message: err,
       });
     });
 });
+
 // 2. I can get an array of all users by getting api/exercise/users with the same info as when creating a user.
 router.get("/users", (req, res) => {
-  res.json({
-    res: "hello from users",
-  });
+  console.log("Request for userlist");
+  User.find({})
+    .exec()
+    .then((docs) => {
+      let result = [];
+      docs.forEach((doc) => {
+        const username = doc.username;
+        const id = doc._id;
+        result.push({
+          username,
+          id,
+        });
+      });
+      res.json(result);
+    })
+    .catch((err) => {
+      console.log("Request for userlist error: ", err);
+      res.json({
+        message: err,
+      });
+    });
 });
+
 // 3. I can add an exercise to any user by posting form data userId(_id), description, duration, and optionally date to /api/exercise/add. If no date supplied it will use current date. Returned will be the user object with also with the exercise fields added.
 router.post("/add", (req, res) => {
   res.json({
