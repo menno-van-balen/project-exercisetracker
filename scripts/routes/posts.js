@@ -29,9 +29,7 @@ router.post("/new-user", (req, res) => {
     })
     .catch((err) => {
       console.log("New user request error: ", err);
-      res.json({
-        message: err,
-      });
+      res.send(err);
     });
 });
 
@@ -54,18 +52,66 @@ router.get("/users", (req, res) => {
     })
     .catch((err) => {
       console.log("Request for userlist error: ", err);
-      res.json({
-        message: err,
-      });
+      res.send(err);
     });
 });
 
 // 3. I can add an exercise to any user by posting form data userId(_id), description, duration, and optionally date to /api/exercise/add. If no date supplied it will use current date. Returned will be the user object with also with the exercise fields added.
 router.post("/add", (req, res) => {
-  res.json({
-    res: "hello from add",
-  });
+  // search variables
+  const id = req.body.userId;
+  const { description, duration } = req.body;
+  let date = req.body.date;
+  console.log("Adding to log from user with id:", id);
+
+  // handle date
+  if (!date) {
+    date = new Date();
+  } else {
+    date = new Date(date);
+  }
+
+  // search user doc
+  User.findById(id)
+    .exec()
+    .then((doc) => {
+      doc.log.push({
+        description,
+        duration,
+        date,
+      });
+      doc.count += 1;
+      doc
+        .save()
+        .then((doc) => {
+          // response variables from new saved user doc
+          const length = doc.log.length;
+          const lastLog = doc.log[length - 1];
+          const _id = doc._id;
+          const username = doc.username;
+          const date = lastLog.date.toDateString();
+          const duration = lastLog.duration;
+          const description = lastLog.description;
+          // send back response
+          res.json({
+            _id,
+            username,
+            date,
+            duration,
+            description,
+          });
+        })
+        .catch((err) => {
+          console.log("Add excercise error");
+          res.send(err);
+        });
+    })
+    .catch((err) => {
+      console.log("Add excercise error");
+      res.send(err);
+    });
 });
+
 // 4. I can retrieve a full exercise log of any user by getting /api/exercise/log with a parameter of userId(_id). Return will be the user object with added array log and count (total exercise count).
 router.get("/log", (req, res) => {
   res.json({

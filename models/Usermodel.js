@@ -6,9 +6,11 @@ const userSchema = new schema({
   username: { type: String, required: true },
   count: { type: Number, required: true },
   log: [
-    { date: { type: Date, default: Date.now } },
-    { duration: { type: Number, required: true } },
-    { description: { type: String, required: true } },
+    {
+      date: { type: Date },
+      duration: { type: Number, required: true },
+      description: { type: String, required: true },
+    },
   ],
 });
 
