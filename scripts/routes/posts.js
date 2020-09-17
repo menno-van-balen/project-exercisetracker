@@ -1,12 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const user = require("../../models/Usermodel");
+const User = require("../../models/Usermodel");
 
 // 1. I can create a user by posting form data username to /api/exercise/new-user and returned will be an object with username and _id.
 router.post("/new-user", (req, res) => {
-  res.json({
-    res: "hello from new-user",
-  });
+  const username = req.body.username;
+  User.findOne({ username })
+    .exec()
+    .then((doc) => {
+      if (doc) {
+        console.log("New user request: Username already taken");
+        res.send("Username already taken");
+      } else {
+        const user = new User({
+          username,
+          count: 0,
+        });
+        console.log("Creating new user: ", user);
+        user.save().then((doc) => {
+          const id = doc._id;
+          const username = doc.username;
+          res.json({
+            username,
+            id,
+          });
+        });
+      }
+    })
+    .catch((err) => {
+      console.error;
+      res.json({
+        message: err,
+      });
+    });
 });
 // 2. I can get an array of all users by getting api/exercise/users with the same info as when creating a user.
 router.get("/users", (req, res) => {
