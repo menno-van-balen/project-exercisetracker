@@ -22,12 +22,12 @@ router.post("/new-user", (req, res) => {
         console.log("Creating new user: ", user);
         user.save().then((doc) => {
           // response variables
-          const { id, username } = doc;
+          const { _id, username } = doc;
 
           // send response
           res.json({
             username,
-            id,
+            _id,
           });
         });
       }
@@ -51,11 +51,11 @@ router.get("/users", (req, res) => {
 
       docs.forEach((doc) => {
         // response variables
-        const { id, username } = doc;
+        const { _id, username } = doc;
 
         result.push({
           username,
-          id,
+          _id,
         });
       });
 
