@@ -59,10 +59,9 @@ router.get("/users", (req, res) => {
 // 3. I can add an exercise to any user by posting form data userId(_id), description, duration, and optionally date to /api/exercise/add. If no date supplied it will use current date. Returned will be the user object with also with the exercise fields added.
 router.post("/add", (req, res) => {
   // search variables
-  const id = req.body.userId;
-  const { description, duration } = req.body;
+  const { userId, description, duration } = req.body;
   let date = req.body.date;
-  console.log("Adding to log from user with id:", id);
+  console.log("Adding to log from user with id:", userId);
 
   // handle date
   if (!date) {
@@ -72,7 +71,7 @@ router.post("/add", (req, res) => {
   }
 
   // search user doc
-  User.findById(id)
+  User.findById(userId)
     .exec()
     .then((doc) => {
       doc.log.push({
@@ -103,20 +102,51 @@ router.post("/add", (req, res) => {
         })
         .catch((err) => {
           console.log("Add excercise error");
-          res.send(err);
+          res.json({ err });
         });
     })
     .catch((err) => {
       console.log("Add excercise error");
-      res.send(err);
+      res.json("Error, user not in database");
     });
 });
 
 // 4. I can retrieve a full exercise log of any user by getting /api/exercise/log with a parameter of userId(_id). Return will be the user object with added array log and count (total exercise count).
 router.get("/log", (req, res) => {
-  res.json({
-    res: "hello from log",
-  });
+  // res.json({
+  //   res: "hello from log",
+  // });
+  const id = req.query.userId;
+  console.log(id);
+  User.findById(id)
+    .exec()
+    .then((doc) => {
+      const _id = doc._id;
+      const username = doc.username;
+      const count = doc.count;
+      let log = [];
+      doc.log.forEach((obj) => {
+        const description = obj.description;
+        const duration = obj.duration;
+        const date = obj.date.toDateString();
+        log.push({
+          description,
+          duration,
+          date,
+        });
+      });
+      // console.log(doc.log);
+      res.json({
+        _id,
+        username,
+        count,
+        log,
+      });
+    })
+    .catch((err) => {
+      console.log("Add excercise error");
+      res.send(err);
+    });
 });
 // 5. I can retrieve part of the log of any user by also passing along optional parameters of from & to or limit. (Date format yyyy-mm-dd, limit = int)
 
